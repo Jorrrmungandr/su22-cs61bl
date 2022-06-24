@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author Jormungandr
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -29,6 +29,9 @@ public class Model extends Observable {
      *  and score 0. */
     public Model(int size) {
         // TODO: Fill in this constructor.
+        _board = new Board(size);
+        _score = 0;
+        _gameOver = false;
     }
 
     /** A new 2048 game where RAWVALUES contain the values of the tiles
@@ -36,6 +39,10 @@ public class Model extends Observable {
      * to the bottom-left corner. Used for testing purposes. */
     public Model(int[][] rawValues, int score, int maxScore, boolean gameOver) {
         // TODO: Fill in this constructor.
+        _board = new Board(rawValues, score);
+        _score = score;
+        _maxScore = maxScore;
+        _gameOver = gameOver;
     }
 
     /** Return the current Tile at (COL, ROW), where 0 <= ROW < size(),
@@ -88,6 +95,46 @@ public class Model extends Observable {
         setChanged();
     }
 
+    public boolean moveColumn(Side side, int c)
+    {
+        boolean changed = false;
+        boolean[] hasMerged = new boolean[_board.size()];
+
+        for(int i=_board.size()-1;i>=0;--i)
+        {
+            Tile t = _board.tile(c,i);
+            if(t != null)
+                for(int j=i+1;j<=_board.size();++j)
+                {   // move
+                    if(j == _board.size())
+                    {
+                        if(j != i+1)
+                        {
+                            _board.move(c, j-1, t);
+                            changed = true;
+                        }
+                    }
+                    else if(_board.tile(c,j) != null)
+                    {   // merge
+                        if(!hasMerged[j] && _board.tile(c,j).value() == t.value())
+                        {
+                            _board.move(c, j, t);
+                            _score = _score + _board.tile(c,j).value();
+                            hasMerged[j] = true;
+                            changed = true;
+                        }
+                        else if(j != i+1)
+                        {   // move
+                            _board.move(c, j-1, t);
+                            changed = true;
+                        }
+                        break;
+                    }
+                }
+        }
+        return changed;
+    }
+
     /** Tilt the board toward SIDE. Return true iff this changes the board.
      *
      * 1. If two Tile objects are adjacent in the direction of motion and have
@@ -105,6 +152,13 @@ public class Model extends Observable {
         changed = false;
 
         // TODO: Fill in this function.
+        _board.setViewingPerspective(side);
+        for(int i=0;i< _board.size();++i)
+        {
+            if(moveColumn(side, i))
+                changed = true;
+        }
+        _board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
@@ -130,6 +184,12 @@ public class Model extends Observable {
      */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for(int i=0;i<b.size();++i)
+            for(int j=0;j<b.size();++j)
+            {
+                if(b.tile(i,j) == null)
+                    return true;
+            }
         return false;
     }
 
@@ -140,7 +200,19 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for(int i=0;i<b.size();++i)
+            for(int j=0;j<b.size();++j)
+            {
+                Tile t = b.tile(i,j);
+                if(t != null && t.value() == MAX_PIECE)
+                    return true;
+            }
         return false;
+    }
+
+    public static boolean isLegal(int size, int x, int y)
+    {
+        return x>=0&&y>=0&&x<size&&y<size;
     }
 
     /**
@@ -151,7 +223,27 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        // cond1: empty space exists
+        if(emptySpaceExists(b)) return true;
+        // cond2: full but adjacent same tiles exist
+        // direction array
+        int[] dx = {0, 1, 0, -1};
+        int[] dy = {1, 0, -1, 0};
+
+        for(int i=0;i<b.size();++i)
+            for(int j=0;j<b.size();++j)
+            {
+                int val = b.tile(i,j).value();
+                for (int k=0;k<4;++k)
+                {
+                    int x = i + dx[k];
+                    int y = j + dy[k];
+                    if(isLegal(b.size(), x, y) && b.tile(x,y).value() == val)
+                        return true;
+                }
+            }
         return false;
+
     }
 
     /** Returns the model as a string, used for debugging. */
