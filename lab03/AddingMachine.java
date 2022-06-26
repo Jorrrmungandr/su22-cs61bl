@@ -19,6 +19,8 @@ public class AddingMachine {
 			if (input == 0) {
 				if (isPreviousZero) {
 					System.out.println("total " + total);
+					for(int i=0;i<=index;++i)
+						System.out.println(listOfInputs[i]);
 					return;
 				} else {
 					System.out.println("subtotal " + subtotal);
@@ -27,8 +29,10 @@ public class AddingMachine {
 					isPreviousZero = true;
 				}
 			}
-			subtotal += input;
-			if (input != 0) {
+			else {
+				listOfInputs[index] = input;
+				index++;
+				subtotal += input;
 				isPreviousZero = false;
 			}
 
