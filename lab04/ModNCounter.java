@@ -1,8 +1,8 @@
-public class Counter {
+public class ModNCounter {
 
     private int myCount;
 
-    public Counter() {
+    public ModNCounter() {
         myCount = 0;
     }
 
