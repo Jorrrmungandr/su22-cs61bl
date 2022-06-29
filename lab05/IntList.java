@@ -17,6 +17,19 @@ public class IntList {
         this.next = next;
     }
 
+    /** Copy Constructor */
+    public IntList(IntList other){
+        this.item = other.item;
+        this.next = null;
+        IntList cur0 = this, cur1 = other.next;
+        while(cur1 != null){
+            cur0.next = new IntList(cur1.item);
+            cur0 = cur0.next;
+            cur1 = cur1.next;
+        }
+    }
+
+
     /** Constructs an IntList storing ITEM and no next node. */
     public IntList(int item) {
         this(item, null);
@@ -50,7 +63,18 @@ public class IntList {
      */
     public int get(int position) {
         //TODO: YOUR CODE HERE
-        return -1;
+        if(position < 0){
+            throw new IllegalArgumentException("index out of range");
+        }
+        IntList cur = this;
+        while(position-- > 0)
+        {
+            cur = cur.next;
+            if(cur == null) {
+                throw new IllegalArgumentException("index out of range");
+            }
+        }
+        return cur.item;
     }
 
     /**
@@ -61,7 +85,16 @@ public class IntList {
      */
     public String toString() {
         //TODO: YOUR CODE HERE
-        return null;
+        StringBuilder ret = new StringBuilder();
+        IntList cur = this;
+        while(cur.next != null){
+            ret.append(cur.item);
+            ret.append(' ');
+            cur = cur.next;
+        }
+        ret.append(cur.item);
+
+        return ret.toString();
     }
 
     /**
@@ -84,8 +117,19 @@ public class IntList {
         IntList otherLst = (IntList) obj;
 
         //TODO: YOUR CODE HERE
-
-        return false;
+        IntList cur = this;
+        while(true) {
+            if(cur == null && otherLst != null)
+                return false;
+            if(cur != null && otherLst == null)
+                return false;
+            if(cur == null && otherLst == null)
+                return true;
+            if(cur.item != otherLst.item)
+                return false;
+            cur = cur.next;
+            otherLst = otherLst.next;
+        }
     }
 
     /**
@@ -95,6 +139,11 @@ public class IntList {
      */
     public void add(int value) {
         //TODO: YOUR CODE HERE
+        IntList cur = this;
+        while(cur.next != null){
+            cur = cur.next;
+        }
+        cur.next = new IntList(value);
     }
 
     /**
@@ -104,7 +153,13 @@ public class IntList {
      */
     public int smallest() {
         //TODO: YOUR CODE HERE
-        return -1;
+        int min = this.item;
+        IntList cur = this;
+        while(cur != null){
+            min = Math.min(min, cur.item);
+            cur = cur.next;
+        }
+        return min;
     }
 
     /**
@@ -114,7 +169,13 @@ public class IntList {
      */
     public int squaredSum() {
         //TODO: YOUR CODE HERE
-        return -1;
+        int sum = 0;
+        IntList cur = this;
+        while(cur != null){
+            sum += cur.item * cur.item;
+            cur = cur.next;
+        }
+        return sum;
     }
 
     /**
@@ -172,7 +233,13 @@ public class IntList {
      */
     public static IntList dcatenate(IntList A, IntList B) {
         //TODO: YOUR CODE HERE
-        return null;
+        IntList curA = A;
+        while(curA.next != null){
+            curA = curA.next;
+        }
+        curA.next = new IntList(B);
+
+        return A;
     }
 
     /**
@@ -185,6 +252,12 @@ public class IntList {
      */
      public static IntList catenate(IntList A, IntList B) {
         //TODO: YOUR CODE HERE
-        return null;
+         IntList L = new IntList(A);
+         IntList cur = L;
+         while(cur.next != null){
+             cur = cur.next;
+         }
+         cur.next = new IntList(B);
+         return L;
      }
 }
