@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.In;
+
 /** A data structure to represent a Linked List of Integers.
  * Each IntList represents one node in the overall Linked List.
  *
@@ -260,4 +262,10 @@ public class IntList {
          cur.next = new IntList(B);
          return L;
      }
+
+    public static void main(String[] args) {
+        IntList L1 = new IntList(1);
+        IntList L2 = new IntList(null);
+        System.out.println(L2);
+    }
 }
