@@ -23,4 +23,19 @@ public class SLListTest {
         test1.add(0, 0);
         assertEquals(SLList.of(0, 1, 2, 3, 4, 5), test1);
     }
+
+    @Test public void testSLListReverse(){
+        SLList test1 = SLList.of(1, 2, 3);
+        SLList test2 = new SLList();
+        SLList test3 = new SLList(1);
+
+        test1.reverse();
+        assertEquals(SLList.of(3,2,1), test1);
+        test2.reverse();
+        assertEquals(new SLList(), test2);
+        test3.reverse();
+        assertEquals(new SLList(1), test3);
+
+    }
+
 }
